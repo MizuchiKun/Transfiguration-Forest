@@ -5,19 +5,22 @@ public class PlayerController : MonoBehaviour
     #region Fields
     // Components.
     private PlayerMovement _movement;
-    private Vector2 _moveInput = new Vector2();
+    private Animator _animator;
 
     // State variables.
+    private bool _jumpSuccessful = false;
+
+    // Input variables.
+    private Vector2 _moveInput = new Vector2();
     private bool _jumpPressed = false;
     private bool _jumpReleased = false;
-    private bool _jumpSuccessful = false;
     #endregion
 
     private void Awake()
     {
         // Get component references.
         _movement = GetComponent<PlayerMovement>();
-
+        _animator = GetComponent<Animator>();
     }
 
     private void Start()
@@ -37,9 +40,10 @@ public class PlayerController : MonoBehaviour
     private void FixedUpdate()
     {
         _movement.Run(_moveInput.x);
+
         if (_jumpPressed)
-            _jumpSuccessful = _movement.Jump();
+            _movement.OnJumpInputDown();
         else if (_jumpReleased)
-            _movement.IsJumpCut = true;
+            _movement.OnJumpInputUp();
     }
 }

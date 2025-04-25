@@ -3064,25 +3064,28 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 7a222c90b60ec144db19b1175e301eda, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _fallGravityMultiplier: 0
-  _maxFallSpeed: 0
-  _fastFallGravityMultiplier: 0
-  _maxFastFallSpeed: 0
-  _runMaxSpeed: 0
-  _runAcceleration: 0
-  _runDeceleration: 0
-  _accelInAirMultiplier: 0
-  _decelInAirMultiplier: 0
+  _fallGravityMultiplier: 1.75
+  _maxFallSpeed: 10
+  _runMaxSpeed: 8
+  _runAcceleration: 1
+  _runDeceleration: 10
+  _accelInAirMultiplier: 0.4
+  _decelInAirMultiplier: 0.4
   _doConserveMomentum: 1
-  _jumpHeight: 0
-  _jumpTimeToApex: 0
-  _jumpCutGravityMultiplier: 0
-  _jumpHangGravityMultiplier: 0
-  _jumpHangSpeedThreshold: 0
-  _jumpHangAccelerationMultiplier: 0
-  _jumpHangMaxSpeedMultiplier: 0
-  _coyoteTime: 0.01
-  _jumpInputBufferTime: 0.01
+  _jumpHeight: 3.6
+  _jumpTimeToApex: 0.75
+  _jumpCutGravityMultiplier: 3
+  _jumpHangGravityMultiplier: 0.5
+  _jumpHangSpeedThreshold: 0.5
+  _jumpHangAccelerationMultiplier: 1
+  _jumpHangMaxSpeedMultiplier: 1
+  _coyoteTime: 0.5
+  _jumpInputBufferTime: 0.5
+  _groundCheckPoint: {fileID: 0}
+  _groundCheckSize: {x: 0.75, y: 0.1}
+  _groundCheckLayers:
+    serializedVersion: 2
+    m_Bits: 8
 --- !u!114 &385563444
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -3222,7 +3225,7 @@ Camera:
   m_Enabled: 1
   serializedVersion: 2
   m_ClearFlags: 2
-  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_BackGroundColor: {r: 0.19754355, g: 0.3417444, b: 0.5849056, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2
   m_FOVAxisMode: 0
@@ -3396,7 +3399,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2074655116}
   m_Layer: 0
-  m_Name: GroundCheckPoint temp
+  m_Name: GroundCheck
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
