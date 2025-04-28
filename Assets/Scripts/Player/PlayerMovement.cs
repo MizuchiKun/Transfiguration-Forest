@@ -317,7 +317,9 @@ public class PlayerMovement : MonoBehaviour
     {
         // The desiered gravity (strength).
         // ""Calculate gravity strength using the formula (gravity = 2 * jumpHeight / timeToJumpApex^2).""
-        _gravityStrength = -(2 * _jumpHeight) / (_jumpTimeToApex * _jumpTimeToApex);
+        // ('If' is just a workaround to prevent the "gravityScale is infinite" error when changing the value via. inspector.)
+        if (_jumpTimeToApex > 0.01f)
+            _gravityStrength = -(2 * _jumpHeight) / (_jumpTimeToApex * _jumpTimeToApex);
         // Calculate corresponding gravity scale (so gravityStrength relative to the project's gravity setting).
         _gravityScale = _gravityStrength / Physics2D.gravity.y;
 
