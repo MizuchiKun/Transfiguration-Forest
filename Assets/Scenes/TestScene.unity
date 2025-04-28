@@ -3066,22 +3066,22 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   _fallGravityMultiplier: 1.75
   _maxFallSpeed: 10
-  _runMaxSpeed: 8
+  _runMaxSpeed: 10
   _runAcceleration: 1
-  _runDeceleration: 10
+  _runDeceleration: 8
   _accelInAirMultiplier: 0.4
   _decelInAirMultiplier: 0.4
   _doConserveMomentum: 1
   _jumpHeight: 3.6
   _jumpTimeToApex: 0.75
-  _jumpCutGravityMultiplier: 3
+  _jumpCutGravityMultiplier: 2.5
   _jumpHangGravityMultiplier: 0.5
   _jumpHangSpeedThreshold: 0.5
   _jumpHangAccelerationMultiplier: 1
   _jumpHangMaxSpeedMultiplier: 1
   _coyoteTime: 0.5
   _jumpInputBufferTime: 0.5
-  _groundCheckPoint: {fileID: 0}
+  _groundCheckPoint: {fileID: 2074655116}
   _groundCheckSize: {x: 0.75, y: 0.1}
   _groundCheckLayers:
     serializedVersion: 2

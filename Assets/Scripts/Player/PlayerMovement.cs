@@ -10,6 +10,7 @@ using UnityEngine;
 public class PlayerMovement : MonoBehaviour
 {
     #region Fields
+    #region Gravity
     /* ??? */
     private float _gravityStrength;
     /* ??? */
@@ -18,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
     [Space(5)]
     [SerializeField] private float _fallGravityMultiplier;
     [SerializeField] private float _maxFallSpeed;
+    #endregion
 
     [Space(20)]
 
@@ -37,9 +39,6 @@ public class PlayerMovement : MonoBehaviour
     #endregion
 
     #region Jump fields
-    private bool _isJumping = false;
-    private bool _isJumpFalling = false;
-    private bool _isJumpCut = false;
     [Header("Jump")]
     [Space(20)]
     [SerializeField] private float _jumpHeight;
@@ -58,17 +57,21 @@ public class PlayerMovement : MonoBehaviour
     #region Assist fields
     [Header("Assists")]
     [SerializeField] [Range(0.01f, 0.5f)] private float _coyoteTime;
-    private float _lastGroundedTime = 0f;
     [SerializeField] [Range(0.01f, 0.5f)] private float _jumpInputBufferTime;
+    private float _lastGroundedTime = 0f;
     private float _lastJumpPressTime = 0f;
     #endregion
 
-    #region Input variables
-
+    #region State variables
+    public bool IsFacingRight { get; private set; } = true;
+    public bool IsJumping { get; private set; } = false;
+    private bool _isJumpFalling = false;
+    private bool _isJumpCut = false;
     #endregion
 
     #region Check variables
     #region Collision check variables
+    // Does any of this even need to be serialisable or in the inspector? . . .
     [HideInInspector] [SerializeField] private Transform _groundCheckPoint;
     [Header("Checks")]
     [SerializeField] private Vector2 _groundCheckSize = new Vector2(0.97f, 0.1f);
@@ -88,12 +91,13 @@ public class PlayerMovement : MonoBehaviour
     {
         // Get component references.
         _rb = GetComponent<Rigidbody2D>();
-        _groundCheckPoint = transform.Find("GroundCheck");
+        SetGroundCheckPoint();
     }
 
     private void Start()
     {
-        //
+        SetGravityScale(_gravityScale);
+        IsFacingRight = true;
     }
 
     private void Update()
@@ -102,18 +106,67 @@ public class PlayerMovement : MonoBehaviour
         _lastGroundedTime -= Time.deltaTime;
         _lastJumpPressTime -= Time.deltaTime;
 
-        // Check related stuff.
         if (IsStandingOnGround())
             _lastGroundedTime = _coyoteTime;
+
+        #region Jump checks.
+        bool isFalling = _rb.linearVelocity.y < 0;
+        if (IsJumping && isFalling)
+        {
+            IsJumping = false;
+            _isJumpFalling = true;
+        }
+
+        if (IsGrounded() && !IsJumping)
+        {
+            _isJumpCut = false;
+            _isJumpFalling = false;
+        }
+
+        // Jump.
+        if (CanJump() && JumpInputBuffered())
+        {
+            IsJumping = true;
+            _isJumpCut = false;
+            _isJumpFalling = false;
+            Jump();
+        }
+        #endregion
+
+        #region Gravity.
+        // Use different gravity scales under different circumstances.
+        // Inter alia to adjust the jump curve.
+        bool isAirborneDueToJump = (IsJumping || _isJumpFalling);
+        bool isJumpHanging = Mathf.Abs(_rb.linearVelocity.y) < _jumpHangSpeedThreshold;
+        if (_isJumpCut)
+        {
+            SetGravityScale(_jumpCutGravityMultiplier * _gravityScale);
+            _rb.linearVelocityY = Mathf.Max(_rb.linearVelocity.y, -_maxFallSpeed);
+        }
+        else if (isAirborneDueToJump && isJumpHanging)
+        {
+            SetGravityScale(_jumpHangGravityMultiplier * _gravityScale);
+        }
+        else if (isFalling)
+        {
+            SetGravityScale(_fallGravityMultiplier * _gravityScale);
+            _rb.linearVelocityY = Mathf.Max(_rb.linearVelocity.y, -_maxFallSpeed);
+        }
+        else
+        {
+            // Default gravity if standing on a platform or moving upwards.
+            SetGravityScale(_gravityScale);
+        }
+        #endregion
     }
 
     private void FixedUpdate()
     {
-        // handle physics stuff, like the gravity in different states
+        //
     }
 
     /// <summary>
-    /// Makes the player run based on the given raw input vector. <br/>
+    /// Makes the player run based on the given raw input. <br/>
     /// <br/>
     /// Call it in a FixedUpdate() method, since it uses forces!
     /// </summary>
@@ -122,7 +175,7 @@ public class PlayerMovement : MonoBehaviour
     {
         float targetSpeed = moveInputX * _runMaxSpeed;
 
-        // Calculate accelRate.
+        #region Calculate accelRate.
         float accelRate;
         bool isGrounded = IsGrounded();
         bool doAccelerate = Mathf.Abs(targetSpeed) > StopSpeedThreshold;  // Maybe rename doAccelerate.
@@ -132,18 +185,21 @@ public class PlayerMovement : MonoBehaviour
             accelRate = (doAccelerate)
                         ? _runAccelAmount * _accelInAirMultiplier
                         : _runDecelAmount * _decelInAirMultiplier;
+        #endregion
 
-        // Add bonus (horizontal) acceleration at jump apex.
+        #region Add bonus (horizontal) acceleration at jump apex.
         // *Allegedly* makes the jump feel a bit more bouncy, responsive and natural.
-        bool isAirborneDueToJump = (_isJumping || _isJumpFalling);
+        bool isAirborneDueToJump = (IsJumping || _isJumpFalling);
         bool isJumpHanging = Mathf.Abs(_rb.linearVelocity.y) < _jumpHangSpeedThreshold;
         if (isAirborneDueToJump && isJumpHanging)
         {
             accelRate *= _jumpHangAccelerationMultiplier;
             targetSpeed *= _jumpHangMaxSpeedMultiplier;
         }
+        #endregion
 
-        // Conserve momentum (don't slow down player if faster than targetSpeed in target direction).
+        #region Conserve momentum.
+        // (Don't slow down player if faster than targetSpeed in target direction.).
         bool isFasterThanTargetSpeed = Mathf.Abs(_rb.linearVelocity.x) > Mathf.Abs(targetSpeed);
         bool isMovingInTargetDirection = Mathf.Sign(_rb.linearVelocity.x) == Mathf.Sign(targetSpeed);
         if (_doConserveMomentum && !isGrounded && doAccelerate
@@ -151,37 +207,34 @@ public class PlayerMovement : MonoBehaviour
         {
             accelRate = 0;
         }
+        #endregion
 
-        // Calculate runForce and apply it.
+        #region Calculate runForce and apply it.
         float targetSpeedDiff = targetSpeed - _rb.linearVelocity.x;
         float runForce = targetSpeedDiff * accelRate;
         _rb.AddForce(runForce * Vector2.right, ForceMode2D.Force);
+        #endregion
     }
 
     /// <summary>
     /// Makes the player jump.
     /// </summary>
-    /// <returns><c>true</c> if the player jumped (was able to), <c>false</c> otherwise.</returns>
-    public bool Jump()
+    public void Jump()
     {
-        throw new NotImplementedException();
-    }
+        // Prevent multiple jumps from one button press.
+        _lastJumpPressTime = 0;
+        _lastGroundedTime = 0;
 
-    public void OnJumpInputDown()
-    {
-        _lastJumpPressTime = _jumpInputBufferTime;
+        #region Perform jump.
+        // Set vertical velocity to 0 if falling so every jump will be the same height.
+        float jumpForce = _jumpForce;
+        bool isFalling = _rb.linearVelocity.y < 0;
+        if (isFalling)
+            _rb.linearVelocityY = 0 ;
+            //jumpForce -= _rb.linearVelocity.y;
 
-        if (CanJump())
-        {
-            Jump();
-            _isJumping = true;
-        }
-    }
-
-    public void OnJumpInputUp()
-    {
-        if (_isJumping)
-            _isJumpCut = true;
+        _rb.AddForce(jumpForce * Vector2.up, ForceMode2D.Impulse);
+        #endregion
     }
 
     #region Check methods
@@ -211,13 +264,13 @@ public class PlayerMovement : MonoBehaviour
     /// <returns>True if the player can jump, false otherwise.</returns>
     private bool CanJump()
     {
-        return !_isJumping && IsGrounded();
+        return !IsJumping && IsGrounded();
     }
 
     /// <summary>
-    /// Whether the player is in coyote time (including standing on ground).
+    /// Whether the player has a jump input buffered (which triggers when next grounded).
     /// </summary>
-    /// <returns>True when they're in coyote time, false otherwise.</returns>
+    /// <returns>True when they have a buffered input, false otherwise.</returns>
 
     private bool JumpInputBuffered()
     {
@@ -225,22 +278,61 @@ public class PlayerMovement : MonoBehaviour
     }
     #endregion
 
-    #region EDITOR METHODS
+    #region Miscellaneous methods.
+    public void OnJumpInputDown()
+    {
+        _lastJumpPressTime = _jumpInputBufferTime;
+    }
+
+    public void OnJumpInputUp()
+    {
+        bool isMovingUp = _rb.linearVelocity.y > 0;
+        bool canJumpCut = IsJumping && isMovingUp;
+        if (canJumpCut)
+            _isJumpCut = true;
+    }
+
+    private void SetGravityScale(float gravityScale)
+    {
+        _rb.gravityScale = gravityScale;
+    }
+
+    private void SetGroundCheckPoint()
+    {
+        if (_groundCheckPoint == null)
+            _groundCheckPoint = transform.Find("GroundCheck");
+    }
+    #endregion
+
+    #region Editor methods.
     private void OnDrawGizmosSelected()
     {
         // Draw gizmos for collision check boxes.
+        SetGroundCheckPoint();
         Gizmos.color = Color.green;
         Gizmos.DrawWireCube(_groundCheckPoint.position, _groundCheckSize);
     }
 
     private void OnValidate()
     {
-        // Re-calculate some variables when inspector parameters update.
+        // The desiered gravity (strength).
+        // ""Calculate gravity strength using the formula (gravity = 2 * jumpHeight / timeToJumpApex^2).""
+        _gravityStrength = -(2 * _jumpHeight) / (_jumpTimeToApex * _jumpTimeToApex);
+        // Calculate corresponding gravity scale (so gravityStrength relative to the project's gravity setting).
+        _gravityScale = _gravityStrength / Physics2D.gravity.y;
 
         // No bloody clue what this Å´ magic formula does, or how it works. Certainly makes no physical sense, afaik.
-        // [Calculate our run acceleration & deceleration forces using formula: amount = ((1 / Time.fixedDeltaTime) * acceleration) / runMaxSpeed.]
+        // ""Calculate our run acceleration & deceleration forces using formula: amount = ((1 / Time.fixedDeltaTime) * acceleration) / runMaxSpeed.""
         _runAccelAmount = (50 * _runAcceleration) / _runMaxSpeed;
         _runDecelAmount = (50 * _runDeceleration) / _runMaxSpeed;
+
+        // Once again, what is this formula? m/s^2 * s != N . . .
+        // ""Calculate jumpForce using the formula (initialJumpVelocity = gravity * timeToJumpApex).""
+        _jumpForce = Mathf.Abs(_gravityStrength) * _jumpTimeToApex;
+
+        // Clamp variable ranges.
+        _runAcceleration = Mathf.Clamp(_runAcceleration, 0.01f, _runMaxSpeed);
+        _runDeceleration = Mathf.Clamp(_runDeceleration, 0.01f, _runMaxSpeed);
     }
     #endregion
 }
