@@ -25,7 +25,7 @@ public class PlayerMovement : MonoBehaviour
 
     #region Run fields
     [Header("Run")]
-    [SerializeField] private float _runMaxSpeed;
+    [SerializeField] public float RunMaxSpeed;
     [SerializeField] private float _runAcceleration;
     [SerializeField] private float _runDeceleration;
     private float _runAccelAmount; /* ??? */
@@ -35,7 +35,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField][Range(0f, 1)] private float _decelInAirMultiplier;
     [Space(5)]
     [SerializeField] private bool _doConserveMomentum = true;
-    private const float StopSpeedThreshold = 0.01f;
+    public const float StopSpeedThreshold = 0.1f;
     #endregion
 
     #region Jump fields
@@ -43,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
     [Space(20)]
     [SerializeField] private float _jumpHeight;
     [SerializeField] private float _jumpTimeToApex;
-    private float _jumpForce;
+    public float JumpForce { get; private set; }
     [SerializeField] private float _jumpCutGravityMultiplier;
     [SerializeField][Range(0f, 1)] private float _jumpHangGravityMultiplier;
     [SerializeField] private float _jumpHangSpeedThreshold;
@@ -134,6 +134,7 @@ public class PlayerMovement : MonoBehaviour
         #endregion
 
         #region Gravity.
+        //!!! The player is currently clipping into the ground for 1 or 2 frames when landing. Can I prevent that?
         // Use different gravity scales under different circumstances.
         // Inter alia to adjust the jump curve.
         bool isAirborneDueToJump = (IsJumping || _isJumpFalling);
@@ -173,7 +174,7 @@ public class PlayerMovement : MonoBehaviour
     /// <param name="moveInputX">The 'Horizontal' raw axis input.</param>
     public void Run(float moveInputX)
     {
-        float targetSpeed = moveInputX * _runMaxSpeed;
+        float targetSpeed = moveInputX * RunMaxSpeed;
 
         #region Calculate accelRate.
         float accelRate;
@@ -227,7 +228,7 @@ public class PlayerMovement : MonoBehaviour
 
         #region Perform jump.
         // Set vertical velocity to 0 if falling so every jump will be the same height.
-        float jumpForce = _jumpForce;
+        float jumpForce = JumpForce;
         bool isFalling = _rb.linearVelocity.y < 0;
         if (isFalling)
             _rb.linearVelocityY = 0 ;
@@ -325,16 +326,16 @@ public class PlayerMovement : MonoBehaviour
 
         // No bloody clue what this « magic formula does, or how it works. Certainly makes no physical sense, afaik.
         // ""Calculate our run acceleration & deceleration forces using formula: amount = ((1 / Time.fixedDeltaTime) * acceleration) / runMaxSpeed.""
-        _runAccelAmount = (50 * _runAcceleration) / _runMaxSpeed;
-        _runDecelAmount = (50 * _runDeceleration) / _runMaxSpeed;
+        _runAccelAmount = (50 * _runAcceleration) / RunMaxSpeed;
+        _runDecelAmount = (50 * _runDeceleration) / RunMaxSpeed;
 
         // Once again, what is this formula? m/s^2 * s != N . . .
         // ""Calculate jumpForce using the formula (initialJumpVelocity = gravity * timeToJumpApex).""
-        _jumpForce = Mathf.Abs(_gravityStrength) * _jumpTimeToApex;
+        JumpForce = Mathf.Abs(_gravityStrength) * _jumpTimeToApex;
 
         // Clamp variable ranges.
-        _runAcceleration = Mathf.Clamp(_runAcceleration, 0.01f, _runMaxSpeed);
-        _runDeceleration = Mathf.Clamp(_runDeceleration, 0.01f, _runMaxSpeed);
+        _runAcceleration = Mathf.Clamp(_runAcceleration, 0.01f, RunMaxSpeed);
+        _runDeceleration = Mathf.Clamp(_runDeceleration, 0.01f, RunMaxSpeed);
     }
     #endregion
 }

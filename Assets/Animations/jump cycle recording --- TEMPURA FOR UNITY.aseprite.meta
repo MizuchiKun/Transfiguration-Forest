@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: 259e57b7dfb6b6440bc9e88be103d6a1
+guid: 99e243d88d110674d849bfa07d5e0584
 ScriptedImporter:
   internalIDToNameTable: []
   externalObjects: {}
@@ -72,7 +72,7 @@ ScriptedImporter:
     textureFormatSet: 0
     applyGammaDecoding: 0
   previousAsepriteImporterSettings:
-    fileImportMode: 0
+    fileImportMode: 1
     importHiddenLayers: 0
     layerImportMode: 1
     defaultPivotSpace: 0
@@ -85,7 +85,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   asepriteImporterSettings:
-    fileImportMode: 0
+    fileImportMode: 1
     importHiddenLayers: 0
     layerImportMode: 1
     defaultPivotSpace: 0
@@ -98,7 +98,7 @@ ScriptedImporter:
     addSortingGroup: 1
     addShadowCasters: 0
   importFileNodeState: 1
-  platformSettingsDirtyTick: 638807627831611290
+  platformSettingsDirtyTick: 638807615998971704
   textureAssetName: 
   singleSpriteImportData:
   - name: 
@@ -123,18 +123,18 @@ ScriptedImporter:
     tessellationDetail: 0
     uvTransform: {x: 0, y: 0}
   animatedSpriteImportData:
-  - name: Grass_Tileset
+  - name: Frame_0
     originalName: 
-    pivot: {x: 0.6666667, y: -1}
+    pivot: {x: 0.44444445, y: -0.375}
     alignment: 9
     border: {x: 0, y: 0, z: 0, w: 0}
     customData: 
     rect:
       serializedVersion: 2
-      x: 4
-      y: 4
-      width: 48
-      height: 32
+      x: 41
+      y: 31
+      width: 9
+      height: 16
     spriteID: 88dc103e9249fd042831e04316a506b2
     spriteBone: []
     spriteOutline: []
@@ -143,7 +143,112 @@ ScriptedImporter:
     indices: 
     edges: []
     tessellationDetail: 0
+    uvTransform: {x: 41, y: 31}
+  - name: Frame_1
+    originalName: 
+    pivot: {x: 0.33333334, y: -0.3529412}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 23
+      y: 29
+      width: 9
+      height: 17
+    spriteID: 3568bd344d52cfc4395338463f28e4fa
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 23, y: 29}
+  - name: Frame_2
+    originalName: 
+    pivot: {x: 0.27272728, y: -0.3529412}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 4
+      width: 11
+      height: 17
+    spriteID: 7c2df4d7a47538d4eb87e6ad09b00684
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
     uvTransform: {x: 4, y: 4}
+  - name: Frame_3
+    originalName: 
+    pivot: {x: 0.27272728, y: -0.4375}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 4
+      y: 29
+      width: 11
+      height: 16
+    spriteID: bdf747e44c6b25a4ead5c9afb024b99b
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 4, y: 29}
+  - name: Frame_4
+    originalName: 
+    pivot: {x: 0.3, y: -0.3529412}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 23
+      y: 4
+      width: 10
+      height: 17
+    spriteID: 603cca93002d49146a68a4b7835918fd
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 23, y: 4}
+  - name: Frame_5
+    originalName: 
+    pivot: {x: 0.375, y: -0.2631579}
+    alignment: 9
+    border: {x: 0, y: 0, z: 0, w: 0}
+    customData: 
+    rect:
+      serializedVersion: 2
+      x: 41
+      y: 4
+      width: 8
+      height: 19
+    spriteID: 4dbeef736ece832409dcd61cd31154c2
+    spriteBone: []
+    spriteOutline: []
+    vertices: []
+    spritePhysicsOutline: []
+    indices: 
+    edges: []
+    tessellationDetail: 0
+    uvTransform: {x: 41, y: 4}
   spriteSheetImportData: []
   asepriteLayers:
   - layerIndex: 0
@@ -158,15 +263,60 @@ ScriptedImporter:
     layerType: 0
     blendMode: 0
     cells:
-    - name: Grass_Tileset (old)
+    - name: Frame_0
       frameIndex: 0
       additiveSortOrder: 0
       cellRect:
-        x: 0
-        y: 32
-        width: 48
-        height: 32
+        x: 12
+        y: 6
+        width: 9
+        height: 16
       spriteId: 88dc103e9249fd042831e04316a506b2
+    - name: Frame_1
+      frameIndex: 1
+      additiveSortOrder: 0
+      cellRect:
+        x: 13
+        y: 6
+        width: 9
+        height: 17
+      spriteId: 3568bd344d52cfc4395338463f28e4fa
+    - name: Frame_2
+      frameIndex: 2
+      additiveSortOrder: 0
+      cellRect:
+        x: 13
+        y: 6
+        width: 11
+        height: 17
+      spriteId: 7c2df4d7a47538d4eb87e6ad09b00684
+    - name: Frame_3
+      frameIndex: 3
+      additiveSortOrder: 0
+      cellRect:
+        x: 13
+        y: 7
+        width: 11
+        height: 16
+      spriteId: bdf747e44c6b25a4ead5c9afb024b99b
+    - name: Frame_4
+      frameIndex: 4
+      additiveSortOrder: 0
+      cellRect:
+        x: 13
+        y: 6
+        width: 10
+        height: 17
+      spriteId: 603cca93002d49146a68a4b7835918fd
+    - name: Frame_5
+      frameIndex: 5
+      additiveSortOrder: 0
+      cellRect:
+        x: 13
+        y: 5
+        width: 8
+        height: 19
+      spriteId: 4dbeef736ece832409dcd61cd31154c2
     linkedCells: []
     parentIndex: -1
   platformSettings:
@@ -221,5 +371,5 @@ ScriptedImporter:
   generatePhysicsShape: 0
   secondarySpriteTextures: []
   spritePackingTag: 
-  canvasSize: {x: 64, y: 64}
+  canvasSize: {x: 32, y: 32}
   previousTextureSize: {x: 64, y: 64}
